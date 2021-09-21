@@ -118,9 +118,9 @@ lang="java"
 
 >    @BeforeAll
     static void boostrapCoherence() {
-        Coherence coherence = Coherence.clusterMember();      <span class="conum" data-value="1" />
-        CompletableFuture&lt;Void&gt; future = coherence.start();   <span class="conum" data-value="2" />
-        future.join();                                        <span class="conum" data-value="3" />
+        Coherence coherence = Coherence.clusterMember();           <span class="conum" data-value="1" />
+        CompletableFuture&lt;Coherence&gt; future = coherence.start();   <span class="conum" data-value="2" />
+        future.join();                                             <span class="conum" data-value="3" />
     }</markup>
 
 <ul class="colist">
