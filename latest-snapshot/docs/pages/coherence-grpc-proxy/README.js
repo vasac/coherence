@@ -70,7 +70,7 @@ for example <code>-Dcoherence.grpc.inprocess.name=foo</code> will set the in-pro
 <h3 id="_using_tls">Using TLS</h3>
 <div class="section">
 <p>By default, the gRPC server runs in plaintext mode.
-The gRPC server can be configured to use TLS. The relevant key, cert and optional CA files must be provided, either on the classpath of file system.</p>
+The gRPC server can be configured to use TLS. The relevant key, cert and optional CA files must be provided, either on the classpath or file system.</p>
 
 <p>Assuming that the TLS key is in a file named <code>/certs/server.key</code>, and that the server TLS cert is in a file named <code>/certs/server.pem</code> then TLS can be configured with the following system properties.</p>
 

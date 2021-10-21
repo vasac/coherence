@@ -55,7 +55,7 @@ the <code>Carts</code> session configuration.</li>
 <h3 id="_running_a_coherence_server">Running A Coherence Server</h3>
 <div class="section">
 <p>The <code>com.tangol.net.Coherence</code> contains a <code>main</code> method that allows it to be used to run a Coherence server as a
-more powerful to alternative <code>DefaultCahceServer</code>.</p>
+more powerful to alternative <code>DefaultCacheServer</code>.</p>
 
 <markup
 lang="bash"
@@ -63,7 +63,7 @@ lang="bash"
 >$ java -cp coherence.jar com.tangosol.net.Coherence</markup>
 
 <p>Without any other configuration, the default <code>Coherence</code> instance started this way will run an identical server
-to that run using <code>DefaultCahceServer</code>.</p>
+to that run using <code>DefaultCacheServer</code>.</p>
 
 <p>The steps above are covered in more detail below.</p>
 
