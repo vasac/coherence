@@ -234,6 +234,19 @@ function createRoutes(){
             component: loadPage('docs-topics-05_persistence', '/docs/topics/05_persistence', {})
         },
         {
+            path: '/coherence-concurrent/README',
+            meta: {
+                h1: 'Distributed Concurrency',
+                title: 'Distributed Concurrency',
+                h1Prefix: null,
+                description: null,
+                keywords: null,
+                customLayout: null,
+                hasNav: true
+            },
+            component: loadPage('coherence-concurrent-README', '/coherence-concurrent/README', {})
+        },
+        {
             path: '/coherence-cdi-server/README',
             meta: {
                 h1: 'Coherence CDI',
@@ -668,6 +681,14 @@ function createNav(){
                                 { href: '/docs/topics/03_publishers', title: 'Publishers' },
                                 { href: '/docs/topics/04_subscribers', title: 'Subscribers' },
                                 { href: '/docs/topics/05_persistence', title: 'Topics and Persistence' }
+                            ]
+                        },
+                        {
+                            title: 'Distributed Concurrency',
+                            action: 'fa-bolt',
+                            group: '/coherence-concurrent',
+                            items: [
+                                { href: '/coherence-concurrent/README', title: 'Distributed Concurrency' }
                             ]
                         },
                         {

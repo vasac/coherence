@@ -189,6 +189,27 @@ These capabilities, in addition to numerous other features, enable Coherence to 
 </v-flex>
 <v-flex xs12 sm4 lg3>
 <v-card>
+<router-link to="/coherence-concurrent/README"><div class="card__link-hover"/>
+</router-link>
+<v-layout align-center justify-center class="">
+<v-avatar size="150px">
+<v-icon class="xxx-large">fa-bolt</v-icon>
+</v-avatar>
+</v-layout>
+<div class="px-3">
+<v-divider class="indigo lighten-4"/>
+</div>
+<v-card-title primary class="headline layout justify-center">
+<span style="text-align:center">Distributed Concurrency</span>
+</v-card-title>
+<v-card-text class="caption">
+<p></p>
+<p>Distributed implementations of executors, locks, atomics, etc.</p>
+</v-card-text>
+</v-card>
+</v-flex>
+<v-flex xs12 sm4 lg3>
+<v-card>
 <router-link to="/coherence-cdi-server/README"><div class="card__link-hover"/>
 </router-link>
 <v-layout align-center justify-center class="">
