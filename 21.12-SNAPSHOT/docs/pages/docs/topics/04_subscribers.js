@@ -45,7 +45,7 @@ Session session = Coherence.getSession();
 
 Subscriber&lt;String&gt; subscriber = session.createSubscriber("test-topic");</markup>
 
-<p>The code snippet above creates an anonymous <code>Subscriber</code> that subscribes to <code>String</code> messages from the topic names <code>test-topic</code>.</p>
+<p>The code snippet above creates an anonymous <code>Subscriber</code> that subscribes to <code>String</code> messages from the topic named <code>test-topic</code>.</p>
 
 <p>Alternatively, a <code>Subscriber</code> can be obtained directly from a <code>NamedTopic</code> instance.</p>
 
@@ -56,12 +56,11 @@ lang="java"
 import com.tangosol.net.topic.NamedTopic;
 import com.tangosol.net.topic.Subscriber;
 
-Session            session = Coherence.getSession();
-NamedTopic&lt;String&gt; topic   = session.getTopic("test-topic");
+Session            session    = Coherence.getSession();
+NamedTopic&lt;String&gt; topic      = session.getTopic("test-topic");
+Subscriber&lt;String&gt; subscriber = topic.createSubscriber();</markup>
 
-Subscriber&lt;String&gt; subscriber = topic.createSubscriber("test-topic");</markup>
-
-<p>Both the <code>Session.createSubscriber()</code> and <code>NamedTopic.createSubscriber()</code> methods also take a var-args array of <code>Subscriber.Option</code> instances to futher configure the behaviour of the subscriber.Some of these options are described below.</p>
+<p>Both the <code>Session.createSubscriber()</code> and <code>NamedTopic.createSubscriber()</code> methods also take a var-args array of <code>Subscriber.Option</code> instances to further configure the behaviour of the subscriber. Some of these options are described below.</p>
 
 </div>
 
@@ -87,7 +86,7 @@ Subscriber&lt;String&gt; subscriber = session.createSubscriber("test-topic", inG
 
 <h3 id="_closing_subscribers">Closing Subscribers</h3>
 <div class="section">
-<p>Subscribers should ideally be closed when application code finishes with them so that any server side and client side resources associated with them are also closed and cleaned up.Orphaned subscribers, where the client application has gone away, will eventually be cleaned up by servr side code.Subscriber groups that are durable will remain until manually removed.</p>
+<p>Subscribers should ideally be closed when application code finishes with them so that any server side and client side resources associated with them are also closed and cleaned up.Orphaned subscribers, where the client application has gone away, will eventually be cleaned up by server side code.Subscriber groups that are durable will remain until manually removed.</p>
 
 <p>Subscribers have a <code>close()</code> method, and are in fact auto-closable, so can be used in a try with resources block.For example:</p>
 
@@ -130,14 +129,14 @@ CompletableFuture&lt;List&lt;Element&lt;String&gt;&gt;&gt; futureBatch subscribe
 
 <ul class="colist">
 <li data-value="1">The first call to receive will return a <code>CompletableFuture</code> that will complete with a <code>Subscriber.Element</code> that will contain the message from the topic and meta-data about the element.</li>
-<li data-value="2">The second call to receive will return a <code>CompletableFuture</code> that will complete with a batch of upto 10 elements.The <code>int</code> parameter is a hint to the subscriber to return a batch and is the maximum number of messages that should be returned, the subscriber could return less messages.At most, a subscriber will return a full page of messages in a batch, so calling receive with a value higher than a page size will not return more messages than the page contains.</li>
+<li data-value="2">The second call to receive will return a <code>CompletableFuture</code> that will complete with a batch of upto 10 elements.The <code>int</code> parameter is a hint to the subscriber to return a batch and is the maximum number of messages that should be returned, the subscriber could return fewer messages.At most, a subscriber will return a full page of messages in a batch, so calling receive with a value higher than a page size will not return more messages than the page contains.</li>
 </ul>
 
 <h4 id="_future_completion">Future Completion</h4>
 <div class="section">
 <p>By default, the <code>CompletableFuture</code> returned from a call to receive will not complete until a message is received. If the topic is empty (or in the case of a group subscriber all the channels owned by the subscriber are empty) the future will not complete until a new message is published to the topic or channel.</p>
 
-<p>This behaviour can be changed so that is a topic or owned channels are empty, the future will complete with a <code>null</code> element value. This is controled by creating the subscriber with the <code>CompleteOnEmpty</code> option.</p>
+<p>This behaviour can be changed so that is a topic or owned channels are empty, the future will complete with a <code>null</code> element value. This is controlled by creating the subscriber with the <code>CompleteOnEmpty</code> option.</p>
 
 <p>For example, to create a subscriber where calls to receive return even if the topic is empty:</p>
 
@@ -157,7 +156,7 @@ Element&lt;String&gt; element = future.get();                           <span cl
 
 <ul class="colist">
 <li data-value="1">The subscriber is created using the <code>CompleteOnEmpty.enabled()</code> option, so it will complete futures even if the topic is empty.</li>
-<li data-value="2">The call to <code>future.get()</code> may return <code>null</code> if the topic or owned channels are emtpy.</li>
+<li data-value="2">The call to <code>future.get()</code> may return <code>null</code> if the topic or owned channels are empty.</li>
 </ul>
 </div>
 
@@ -167,12 +166,12 @@ Element&lt;String&gt; element = future.get();                           <span cl
 
 <div class="admonition important">
 <p class="admonition-textlabel">Important</p>
-<p ><p>Any use of the <code>CompleteableFuture</code> async API (for example <code>future.thenApplyAsync()</code>, <code>future.handleAsync()</code> etc) to hand of completion handling to another thread will then remove any ordering guarantees for message processing. The same applies to application code that manually hands the returned elements off to other worker threads for processing.</p>
+<p ><p>Any use of the <code>CompletableFuture</code> async API (for example <code>future.thenApplyAsync()</code>, <code>future.handleAsync()</code> etc) to hand of completion handling to another thread will then remove any ordering guarantees for message processing. The same applies to application code that manually hands the returned elements off to other worker threads for processing.</p>
 
-<p>It is up to the application code to then handle the futures in such a way that ordering is maintained if that is important to the application&#8217;s use-case..</p>
+<p>It is up to the application code to then handle the futures in such a way that ordering is maintained if that is important to the application&#8217;s use-case.</p>
 </p>
 </div>
-<p>The use of the synchronous <code>CompletableFuture</code> API (for example <code>future.thenApply()</code>, <code>future.handle()</code> etc) will cause completion of other futures by the subscriber to block until the handler code is complete.To maintain order of completion, the subscribe queues up the futures to be completed by a single daemon thread.</p>
+<p>The use of the synchronous <code>CompletableFuture</code> API (for example <code>future.thenApply()</code>, <code>future.handle()</code> etc.) will cause completion of other futures by the subscriber to block until the handler code is complete.To maintain order of completion, the subscribe queues up the futures to be completed by a single daemon thread.</p>
 
 <p>For examples:</p>
 
@@ -248,7 +247,7 @@ lang="java"
 
 <h4 id="_commit_a_received_element">Commit a Received Element</h4>
 <div class="section">
-<p>The <code>Element</code> returnd from a <code>receive</code> call has a <code>commit()</code> method that can be used to commit the element&#8217;s channel and position.</p>
+<p>The <code>Element</code> returned from a <code>receive</code> call has a <code>commit()</code> method that can be used to commit the element&#8217;s channel and position.</p>
 
 <p>For example:</p>
 
