@@ -169,6 +169,19 @@ function createRoutes(){
             component: loadPage('docs-core-08_non_blocking', '/docs/core/08_non_blocking', {})
         },
         {
+            path: '/docs/core/09_backup',
+            meta: {
+                h1: 'Partition Backup Enhancements',
+                title: 'Partition Backup Enhancements',
+                h1Prefix: null,
+                description: 'Coherence Backup Enhancements',
+                keywords: 'coherence, distributed, java, documentation',
+                customLayout: null,
+                hasNav: true
+            },
+            component: loadPage('docs-core-09_backup', '/docs/core/09_backup', {})
+        },
+        {
             path: '/docs/topics/01_introduction',
             meta: {
                 h1: 'Introduction to Coherence Topics',
@@ -668,7 +681,8 @@ function createNav(){
                                 { href: '/docs/core/05_repository', title: 'Repository API' },
                                 { href: '/docs/core/06_durable_events', title: 'Durable Events' },
                                 { href: '/docs/core/07_partition_events_logging', title: 'Partition Events Logging' },
-                                { href: '/docs/core/08_non_blocking', title: 'Non Blocking Data Sources' }
+                                { href: '/docs/core/08_non_blocking', title: 'Non Blocking Data Sources' },
+                                { href: '/docs/core/09_backup', title: 'Partition Backup Enhancements' }
                             ]
                         },
                         {
