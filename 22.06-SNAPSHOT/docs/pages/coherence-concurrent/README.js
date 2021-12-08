@@ -21,7 +21,7 @@
 
 <h3 id="_local_vs_remote">Local vs Remote</h3>
 <div class="section">
-<p>In many cases the factory classes will allow you to get both the <strong>local</strong> and the <strong>remote</strong> instances of various constructs. For example, <code>Locks.localLock</code> will give you an instance of a standard <code>java.util.concurrent.locks.ReentrantLock</code>, while <code>Locks.remoteLock</code> will return an instance of a <code>DistributedLock</code>.</p>
+<p>In many cases the factory classes will allow you to get both the <strong>local</strong> and the <strong>remote</strong> instances of various constructs. For example, <code>Locks.localLock</code> will give you an instance of a standard <code>java.util.concurrent.locks.ReentrantLock</code>, while <code>Locks.remoteLock</code> will return an instance of a <code>RemoteLock</code>.</p>
 
 <p>The main advantage of using factory classes to construct both the local and the remote lock instances (in this case) is that it allows you to name local locks the same way you have to name distributed locks: calling <code>Locks.localLock("foo")</code> will always return the same <code>Lock</code> instance, as the <code>Locks</code> class internally caches both the local and the remote instances it created. Of course, in the case of remote locks, every locally cached remote lock instance is ultimately backed by a shared lock instance somewhere in the cluster, which is used to synchronize lock state across the processes.</p>
 
@@ -641,9 +641,9 @@ private AsyncAtomicLong asyncBar  <span class="conum" data-value="3" /></markup>
 
 <h4 id="exclusive-locks">Exclusive Locks</h4>
 <div class="section">
-<p>A <code>DistributedLock</code> class provides an implementation of a <code>Lock</code> interface and allows you to ensure that only one thread on one member is running critical section guarded by the lock at any given time.</p>
+<p>A <code>RemoteLock</code> class provides an implementation of a <code>Lock</code> interface and allows you to ensure that only one thread on one member is running critical section guarded by the lock at any given time.</p>
 
-<p>To obtain an instance of a <code>DistributedLock</code>, call <code>Locks.remoteLock</code> factory method:</p>
+<p>To obtain an instance of a <code>RemoteLock</code>, call <code>Locks.remoteLock</code> factory method:</p>
 
 <markup
 lang="java"
@@ -674,9 +674,9 @@ finally {
 
 <h4 id="read-write-locks">Read/Write Locks</h4>
 <div class="section">
-<p>A <code>DistributedReadWriteLock</code> class provides an implementation of a <code>ReadWriteLock</code> interface and allows you to ensure that only one thread on one member is running critical section guarded by the write lock at any given time, while allowing multiple concurrent readers.</p>
+<p>A <code>RemoteReadWriteLock</code> class provides an implementation of a <code>ReadWriteLock</code> interface and allows you to ensure that only one thread on one member is running critical section guarded by the write lock at any given time, while allowing multiple concurrent readers.</p>
 
-<p>To obtain an instance of a <code>DistributedReadWriteLock</code>, call <code>Locks.remoteReadWriteLock</code> factory method:</p>
+<p>To obtain an instance of a <code>RemoteReadWriteLock</code>, call <code>Locks.remoteReadWriteLock</code> factory method:</p>
 
 <markup
 lang="java"
@@ -760,7 +760,7 @@ lang="java"
 >DistributedCoundDownLatch foo = Latches.remoteCountDownLatch("foo", 5);     <span class="conum" data-value="1" /></markup>
 
 <ul class="colist">
-<li data-value="1">create an instance of a <code>DistributedCountDownLatch</code> with the initial count of 5</li>
+<li data-value="1">create an instance of a <code>RemoteCountDownLatch</code> with the initial count of 5</li>
 </ul>
 <p>Just like with <code>Atomics</code> and <code>Locks</code>, you can also obtain a local <code>CountDownLatch</code> instance from the <code>Latches</code> class, with will simply return an instance of a standard <code>java.util.concurrent.CountDownLatch</code>, by calling <code>remoteCountDownLatch</code> factory method:</p>
 
@@ -778,9 +778,9 @@ lang="java"
 
 <h4 id="semaphore">Semaphore</h4>
 <div class="section">
-<p>A <code>DistributedSemaphore</code> class provides a distributed implementation of a <code>Semaphore</code>, and allows any cluster member to acquire and release permits from the same semaphore instance.</p>
+<p>A <code>RemoteSemaphore</code> class provides a distributed implementation of a <code>Semaphore</code>, and allows any cluster member to acquire and release permits from the same semaphore instance.</p>
 
-<p>To obtain an instance of a <code>DistributedSemaphore</code>, call <code>Semaphores.remoteSemaphore</code> factory method:</p>
+<p>To obtain an instance of a <code>RemoteSemaphore</code>, call <code>Semaphores.remoteSemaphore</code> factory method:</p>
 
 <markup
 lang="java"
@@ -788,7 +788,7 @@ lang="java"
 >DistributedSemaphore foo = Semaphores.remoteSemaphore("foo", 5);            <span class="conum" data-value="1" /></markup>
 
 <ul class="colist">
-<li data-value="1">create an instance of a remote <code>DistributedSemaphore</code> with 5 permits</li>
+<li data-value="1">create an instance of a remote <code>RemoteSemaphore</code> with 5 permits</li>
 </ul>
 <p>Just like with <code>Atomics</code> and <code>Locks</code>, you can also obtain a local <code>Semaphore</code> instance from the <code>Semaphores</code> class, with will simply return an instance of a standard <code>java.util.concurrent.Semaphore</code>, by calling <code>localSemaphore</code> factory method:</p>
 
@@ -800,7 +800,7 @@ lang="java"
 <ul class="colist">
 <li data-value="1">create an instance of a local <code>Semaphore</code> with 0 permits</li>
 </ul>
-<p>Once you have a <code>DistributedSemaphore</code> instance, you can use it as you normally would, by calling <code>release</code> and <code>acquire</code> methods on it.</p>
+<p>Once you have a <code>RemoteSemaphore</code> instance, you can use it as you normally would, by calling <code>release</code> and <code>acquire</code> methods on it.</p>
 
 </div>
 
@@ -835,9 +835,9 @@ private DistributedSemaphore remoteSemaphoreBar;       <span class="conum" data-
 
 <ul class="colist">
 <li data-value="1">inject an instance of a local <code>CountDownLatch</code> with the initial count of five</li>
-<li data-value="2">inject an instance of a remote <code>DistributedCountDownLatch</code> with the initial count of ten</li>
+<li data-value="2">inject an instance of a remote <code>RemoteCountDownLatch</code> with the initial count of ten</li>
 <li data-value="3">inject an instance of a local <code>Semaphore</code> with zero permits available</li>
-<li data-value="4">inject an instance of a remote <code>DistributedSemaphore</code> with one permit available</li>
+<li data-value="4">inject an instance of a remote <code>RemoteSemaphore</code> with one permit available</li>
 </ul>
 <p>Once a latch or a semaphore instance is obtained via CDI injection, it can be used the same way as an instance obtained directly from the <code>Latches</code> or <code>Semaphores</code> factory classes.</p>
 
