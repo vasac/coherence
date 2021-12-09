@@ -21,9 +21,9 @@
 
 <h3 id="_local_vs_remote">Local vs Remote</h3>
 <div class="section">
-<p>In many cases the factory classes will allow you to get both the <strong>local</strong> and the <strong>remote</strong> instances of various constructs. For example, <code>Locks.localLock</code> will give you an instance of a standard <code>java.util.concurrent.locks.ReentrantLock</code>, while <code>Locks.remoteLock</code> will return an instance of a <code>RemoteLock</code>.</p>
+<p>In many cases the factory classes will allow you to get both the <strong>local</strong> and the <strong>remote</strong> instances of various constructs. For example, <code>Locks.localLock</code> will give you an instance of a standard <code>java.util.concurrent.locks.ReentrantLock</code>, while <code>Locks.remoteLock</code> will return an instance of a <code>RemoteLock</code>. In cases where JDK doesn&#8217;t provide a standard interface, which is the case with atomics, latches and semaphores, we&#8217;ve extracted the interface from the existing JDK class, and created a thin wrapper around the corresponding JDK implementation. For example, Coherence Concurrent provides a <code>Semaphore</code> interface, and <code>LocalSemaphore</code> class that wraps <code>java.util.concurrent.Semaphore</code>. The same is true for the <code>CountDownLatch</code>, and all atomic types.</p>
 
-<p>The main advantage of using factory classes to construct both the local and the remote lock instances (in this case) is that it allows you to name local locks the same way you have to name distributed locks: calling <code>Locks.localLock("foo")</code> will always return the same <code>Lock</code> instance, as the <code>Locks</code> class internally caches both the local and the remote instances it created. Of course, in the case of remote locks, every locally cached remote lock instance is ultimately backed by a shared lock instance somewhere in the cluster, which is used to synchronize lock state across the processes.</p>
+<p>The main advantage of using factory classes to construct both the local and the remote instances is that it allows you to name local locks the same way you have to name remote locks: calling <code>Locks.localLock("foo")</code> will always return the same <code>Lock</code> instance, as the <code>Locks</code> class internally caches both the local and the remote instances it created. Of course, in the case of remote locks, every locally cached remote lock instance is ultimately backed by a shared lock instance somewhere in the cluster, which is used to synchronize lock state across the processes.</p>
 
 </div>
 
@@ -39,7 +39,7 @@
 <div class="section">
 <p>Coherence Concurrent supports both active and on-demand persistence, but just like in the rest of Coherence it is set to <code>on-demand</code> by default.</p>
 
-<p>In order to use active persistence you should set <code>coherence.concurrent.persistence</code> system property to <code>active</code>.</p>
+<p>In order to use active persistence you should set <code>coherence.concurrent.persistence.environment</code> system property to <code>default-active</code>, or another persistence environment that has active persistence enabled.</p>
 
 </div>
 </div>
@@ -151,7 +151,7 @@ lang="xml"
 <p>Coherence Concurrent provides a facility to dispatch tasks, either a <code>Runnable</code> or <code>Callable</code> to
 a Coherence cluster for execution.</p>
 
-<p>Executors that will actually will execute the submitted tasks are configured on each cluster
+<p>Executors that will actually  execute the submitted tasks are configured on each cluster
 member by defining one or more named executors within a cache configuration resource.</p>
 
 </div>
@@ -636,7 +636,7 @@ private AsyncAtomicLong asyncBar  <span class="conum" data-value="3" /></markup>
 <div class="section">
 <p>Coherence Concurrent provides distributed implementations of <code>Lock</code> and <code>ReadWriteLock</code> interfaces from the <code>java.util.concurrent.locks</code> package, allowing you to implement lock-based concurrency control across cluster members when necessary.</p>
 
-<p>Unlike local JDK implementations, the classes in this package use cluster member/process ID and thread ID to identify lock owner, and store shared lock state within a Coherence <code>NamedMap</code>. However, that also implies that the calls to acquire and release locks are remote. network calls, as they need to update shared state that is likely stored on a different cluster member, which will have an impact on performance of <code>lock</code> and <code>unlock</code> operations.</p>
+<p>Unlike local JDK implementations, the classes in this package use cluster member/process ID and thread ID to identify lock owner, and store shared lock state within a Coherence <code>NamedMap</code>. However, that also implies that the calls to acquire and release locks are remote, network calls, as they need to update shared state that is likely stored on a different cluster member, which will have an impact on performance of <code>lock</code> and <code>unlock</code> operations.</p>
 
 
 <h4 id="exclusive-locks">Exclusive Locks</h4>
@@ -745,68 +745,70 @@ private ReadWriteLock bar;   <span class="conum" data-value="2" /></markup>
 
 <h3 id="latches-semaphores">Latches and Semaphores</h3>
 <div class="section">
-<p>Coherence Concurrent also provides distributed implementations of a <code>CountDownLatch</code> and <code>Semaphore</code> classes from <code>java.util.concurrent</code> package, allowing you to implement synchronization of execution across multiple Coherence cluster members as easily as you can implement it within a single process using those two JDK classes.</p>
+<p>Coherence Concurrent also provides distributed implementations of a <code>CountDownLatch</code> and <code>Semaphore</code> classes from <code>java.util.concurrent</code> package, allowing you to implement synchronization of execution across multiple Coherence cluster members as easily as you can implement it within a single process using those two JDK classes. It also provides interfaces for those two concurrency primitives, that both remote and local implementations conform to.</p>
+
+<p>Just like with atomics, the local implementations are nothing more than thin wrappers around corresponding JDK classes.</p>
 
 
 <h4 id="count-down-latch">Count Down Latch</h4>
 <div class="section">
-<p>A <code>DistributedCoundDownLatch</code> class provides a distributed implementation of a <code>CountDownLatch</code>, and allows you to ensure that the execution of the code on any cluster member that is waiting for a latch proceeds only when the latch reaches zero. Any cluster member can both wait for a latch, and count down.</p>
+<p>The <code>RemoteCoundDownLatch</code> class provides a distributed implementation of a <code>CountDownLatch</code>, and allows you to ensure that the execution of the code on any cluster member that is waiting for the latch proceeds only when the latch reaches zero. Any cluster member can both wait for a latch, and count down.</p>
 
-<p>To obtain an instance of a <code>DistributedCoundDownLatch</code>, call <code>Latches.remoteCountDownLatch</code> factory method:</p>
+<p>To obtain an instance of a <code>RemoteCountDownLatch</code>, call <code>Latches.remoteCountDownLatch</code> factory method:</p>
 
 <markup
 lang="java"
 
->DistributedCoundDownLatch foo = Latches.remoteCountDownLatch("foo", 5);     <span class="conum" data-value="1" /></markup>
+>CoundDownLatch foo = Latches.remoteCountDownLatch("foo", 5);     <span class="conum" data-value="1" /></markup>
 
 <ul class="colist">
 <li data-value="1">create an instance of a <code>RemoteCountDownLatch</code> with the initial count of 5</li>
 </ul>
-<p>Just like with <code>Atomics</code> and <code>Locks</code>, you can also obtain a local <code>CountDownLatch</code> instance from the <code>Latches</code> class, with will simply return an instance of a standard <code>java.util.concurrent.CountDownLatch</code>, by calling <code>remoteCountDownLatch</code> factory method:</p>
+<p>Just like with <code>Atomics</code> and <code>Locks</code>, you can also obtain a local <code>CountDownLatch</code> instance from the <code>Latches</code> class by calling <code>remoteCountDownLatch</code> factory method:</p>
 
 <markup
 lang="java"
 
->CoundDownLatch foo = Latches.localCountDownLatch("foo", 10);                <span class="conum" data-value="1" /></markup>
+>CoundDownLatch foo = Latches.localCountDownLatch("foo", 10);     <span class="conum" data-value="1" /></markup>
 
 <ul class="colist">
-<li data-value="1">create an instance of a <code>CountDownLatch</code> with the initial count of 10</li>
+<li data-value="1">create an instance of a <code>LocalCountDownLatch</code> with the initial count of 10</li>
 </ul>
-<p>Once you have a <code>DistributedCoundDownLatch</code> instance, you can use it as you normally would, by calling <code>countDown</code> and <code>await</code> methods on it.</p>
+<p>Once you have a <code>RemoteCountDownLatch</code> instance, you can use it as you normally would, by calling <code>countDown</code> and <code>await</code> methods on it.</p>
 
 </div>
 
 <h4 id="semaphore">Semaphore</h4>
 <div class="section">
-<p>A <code>RemoteSemaphore</code> class provides a distributed implementation of a <code>Semaphore</code>, and allows any cluster member to acquire and release permits from the same semaphore instance.</p>
+<p>The <code>RemoteSemaphore</code> class provides a distributed implementation of a <code>Semaphore</code>, and allows any cluster member to acquire and release permits from the same semaphore instance.</p>
 
 <p>To obtain an instance of a <code>RemoteSemaphore</code>, call <code>Semaphores.remoteSemaphore</code> factory method:</p>
 
 <markup
 lang="java"
 
->DistributedSemaphore foo = Semaphores.remoteSemaphore("foo", 5);            <span class="conum" data-value="1" /></markup>
+>Semaphore foo = Semaphores.remoteSemaphore("foo", 5);            <span class="conum" data-value="1" /></markup>
 
 <ul class="colist">
-<li data-value="1">create an instance of a remote <code>RemoteSemaphore</code> with 5 permits</li>
+<li data-value="1">create an instance of a <code>RemoteSemaphore</code> with 5 permits</li>
 </ul>
-<p>Just like with <code>Atomics</code> and <code>Locks</code>, you can also obtain a local <code>Semaphore</code> instance from the <code>Semaphores</code> class, with will simply return an instance of a standard <code>java.util.concurrent.Semaphore</code>, by calling <code>localSemaphore</code> factory method:</p>
+<p>Just like with <code>Atomics</code> and <code>Locks</code>, you can also obtain a local <code>Semaphore</code> instance from the <code>Semaphores</code> class by calling <code>localSemaphore</code> factory method:</p>
 
 <markup
 lang="java"
 
->Semaphore foo = Semaphores.localSemaphore("foo");                           <span class="conum" data-value="1" /></markup>
+>Semaphore foo = Semaphores.localSemaphore("foo");                <span class="conum" data-value="1" /></markup>
 
 <ul class="colist">
-<li data-value="1">create an instance of a local <code>Semaphore</code> with 0 permits</li>
+<li data-value="1">create an instance of a <code>LocalSemaphore</code> with 0 permits</li>
 </ul>
-<p>Once you have a <code>RemoteSemaphore</code> instance, you can use it as you normally would, by calling <code>release</code> and <code>acquire</code> methods on it.</p>
+<p>Once you have a <code>Semaphore</code> instance, you can use it as you normally would, by calling <code>release</code> and <code>acquire</code> methods on it.</p>
 
 </div>
 
 <h4 id="cdi-latches-semaphores">CDI Support</h4>
 <div class="section">
-<p>You can also use CDI to inject both the count down latch and semaphore instances into objects that need them:</p>
+<p>You can also use CDI to inject both the <code>CountDownLatch</code> and <code>Semaphore</code> instances into objects that need them:</p>
 
 <markup
 lang="java"
@@ -814,32 +816,36 @@ lang="java"
 >@Inject
 @Name("foo")
 @Count(5)
-private CountDownLatch localLatchFoo;                  <span class="conum" data-value="1" />
+private CountDownLatch localLatchFoo;           <span class="conum" data-value="1" />
 
 @Inject
 @Name("foo")
 @Remote
 @Count(10)
-private DistributedCountDownLatch remoteLatchFoo;      <span class="conum" data-value="2" />
+private CountDownLatch remoteLatchFoo;          <span class="conum" data-value="2" />
 
 @Inject
 @Name("bar")
 @Remote
-private Semaphore localSemaphoreBar;                   <span class="conum" data-value="3" />
+private Semaphore localSemaphoreBar;            <span class="conum" data-value="3" />
 
 @Inject
 @Name("bar")
 @Remote
 @Permits(1)
-private DistributedSemaphore remoteSemaphoreBar;       <span class="conum" data-value="4" /></markup>
+private Semaphore remoteSemaphoreBar;           <span class="conum" data-value="4" /></markup>
 
 <ul class="colist">
-<li data-value="1">inject an instance of a local <code>CountDownLatch</code> with the initial count of five</li>
-<li data-value="2">inject an instance of a remote <code>RemoteCountDownLatch</code> with the initial count of ten</li>
-<li data-value="3">inject an instance of a local <code>Semaphore</code> with zero permits available</li>
-<li data-value="4">inject an instance of a remote <code>RemoteSemaphore</code> with one permit available</li>
+<li data-value="1">inject an instance of a <code>LocalCountDownLatch</code> with the initial count of five</li>
+<li data-value="2">inject an instance of a <code>RemoteCountDownLatch</code> with the initial count of ten</li>
+<li data-value="3">inject an instance of a <code>LocalSemaphore</code> with zero permits available</li>
+<li data-value="4">inject an instance of a <code>RemoteSemaphore</code> with one permit available</li>
 </ul>
 <p>Once a latch or a semaphore instance is obtained via CDI injection, it can be used the same way as an instance obtained directly from the <code>Latches</code> or <code>Semaphores</code> factory classes.</p>
+
+<p>The <code>@Name</code> annotation is optional in both cases, as long as the member name (in the examples above, the field name) can be obtained from the injection point, but is required otherwise (such as when using constructor injection).</p>
+
+<p>The <code>@Count</code> annotation specifies the initial latch count, and if omitted will be defaulted to one. The <code>@Permits</code> annotation specifies the number of available permits for a semaphore, and if omitted will be defaulted to zero, which means that the first <code>acquire</code> call will block until another thread releases one or more permits.</p>
 
 </div>
 </div>
