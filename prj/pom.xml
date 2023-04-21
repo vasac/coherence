@@ -159,7 +159,7 @@
     <jar.executable>${java.home.path}/bin/jar</jar.executable>
     <java.executable>${java.home.path}/bin/java</java.executable>
     <java.memory.minimum>1024m</java.memory.minimum>
-    <java.memory.maximum>1024m</java.memory.maximum>
+    <java.memory.maximum>1025m</java.memory.maximum>
 
     <!-- ================================================================== -->
     <!--                       Javadoc Configuration                        -->
