@@ -80,6 +80,7 @@ public class ExtendClientMemberEventTests
         System.setProperty("coherence.member", "TestFrameworkClient");
         System.setProperty("coherence.role",   "TestFrameworkClient");
         System.setProperty("coherence.distributed.localstorage", "false");
+        System.setProperty("test.heap.max", "513");
 
         // test client does not join cluster for now
         Properties props = new Properties();
