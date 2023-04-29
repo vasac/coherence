@@ -8,6 +8,8 @@ package events;
 
 import com.oracle.bedrock.runtime.coherence.CoherenceClusterMember;
 
+import com.oracle.bedrock.runtime.java.options.HeapSize;
+import com.oracle.bedrock.runtime.java.options.JvmOptions;
 import com.oracle.bedrock.testsupport.deferred.Eventually;
 import com.oracle.bedrock.testsupport.junit.TestLogs;
 
@@ -90,7 +92,11 @@ public class ExtendClientMemberEventTests
             props.setProperty("coherence.member", "ExtendClientMemberLeftServer-" + i);
             props.setProperty("coherence.role",  "ExtendClientMemberLeftServer-" + i);
 
-            CoherenceClusterMember member = startCacheServer("ExtendClientMemberLeftServer-" + i, "cache", SERVER_CACHE_CONFIG, props);
+            //CoherenceClusterMember member = startCacheServer("ExtendClientMemberLeftServer-" + i, "cache", SERVER_CACHE_CONFIG, props);
+            CoherenceClusterMember member = startCacheServer("ExtendClientMemberLeftServer-" + i, "cache", SERVER_CACHE_CONFIG, props,
+                                                             true, null,
+                                                             HeapSize.of(128, HeapSize.Units.MB, 384, HeapSize.Units.MB, true),
+                                                             JvmOptions.include("-XX:+ExitOnOutOfMemoryError"));
             s_lstServer.add(member);
             }
 
@@ -101,7 +107,11 @@ public class ExtendClientMemberEventTests
             {
             props.setProperty("coherence.member", "ExtendClientMemberLeftProxyServer-" + i);
 
-            CoherenceClusterMember member = startCacheServer("ExtendClientMemberLeftProxyServer-" + i, "cache", SERVER_CACHE_CONFIG, props);
+            //CoherenceClusterMember member = startCacheServer("ExtendClientMemberLeftProxyServer-" + i, "cache", SERVER_CACHE_CONFIG, props);
+            CoherenceClusterMember member = startCacheServer("ExtendClientMemberLeftProxyServer-" + i, "cache", SERVER_CACHE_CONFIG, props,
+                                                             true, null,
+                                                             HeapSize.of(128, HeapSize.Units.MB, 384, HeapSize.Units.MB, true),
+                                                             JvmOptions.include("-XX:+ExitOnOutOfMemoryError"));
             s_lstProxy.add(member);
             }
 
