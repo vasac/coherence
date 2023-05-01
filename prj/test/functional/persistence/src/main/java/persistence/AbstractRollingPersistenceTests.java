@@ -6,6 +6,8 @@
  */
 package persistence;
 
+import com.oracle.bedrock.runtime.java.options.HeapSize;
+import com.oracle.bedrock.runtime.java.options.JvmOptions;
 import com.oracle.coherence.common.base.SimpleHolder;
 import com.oracle.bedrock.testsupport.deferred.Eventually;
 
@@ -122,6 +124,7 @@ public abstract class AbstractRollingPersistenceTests
         File fileSnapshot = FileHelper.createTempDir();
         File fileTrash    = FileHelper.createTempDir();
 
+        // DOESN'T WORK
         System.setProperty("test.heap.max", "513");
 
         System.setProperty("test.persistence.active.dir", fileActive.getAbsolutePath());
@@ -135,7 +138,10 @@ public abstract class AbstractRollingPersistenceTests
                 CacheFactory.ensureCluster(), sTest + "-", cBackups);
         for (int i = 0; i < cServers; i++)
             {
-            memberHandler.addServer();
+            memberHandler.addServer(null,
+                                    HeapSize.of(128, HeapSize.Units.MB, 385, HeapSize.Units.MB, true),
+                                    JvmOptions.include("-XX:+ExitOnOutOfMemoryError")
+            );
             }
 
         try

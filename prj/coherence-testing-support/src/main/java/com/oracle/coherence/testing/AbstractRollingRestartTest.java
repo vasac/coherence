@@ -8,6 +8,9 @@
 package com.oracle.coherence.testing;
 
 
+import com.oracle.bedrock.Option;
+import com.oracle.bedrock.runtime.java.options.HeapSize;
+import com.oracle.bedrock.runtime.java.options.JvmOptions;
 import com.oracle.bedrock.testsupport.deferred.Eventually;
 import com.oracle.bedrock.runtime.coherence.CoherenceClusterMember;
 import com.oracle.bedrock.runtime.concurrent.RemoteRunnable;
@@ -534,6 +537,11 @@ public abstract class AbstractRollingRestartTest
             return addServer(null);
             }
 
+        public Member addServer(Properties props)
+            {
+            return addServer(props, new Option[0]);
+            }
+
         /**
         * Start a cache server.
         *
@@ -541,7 +549,7 @@ public abstract class AbstractRollingRestartTest
         *
         * @return the new Member
         */
-        public Member addServer(Properties props)
+        public Member addServer(Properties props, Option... options)
             {
             String     sServerName = getPrefix() + m_nNonce++;
             Properties propsAll    = ensureProperties();
@@ -555,7 +563,12 @@ public abstract class AbstractRollingRestartTest
             int     nSize   = cluster.getMemberSet().size();
 
             startCacheServer(sServerName, getProjectName(),
-                             getCacheConfigPath(), propsAll, true);
+                             getCacheConfigPath(), propsAll, true,
+                             null,
+                             options
+                             );
+            //startCacheServer(sServerName, getProjectName(),
+            //                 getCacheConfigPath(), propsAll, true);
 
             Eventually.assertDeferred(() -> cluster.getMemberSet().size(), is(nSize + 1));
 
