@@ -61,6 +61,7 @@ public class PersistenceThreadTests
             m_fileActive   = FileHelper.createTempDir();
             m_fileSnapshot = FileHelper.createTempDir();
             m_fileTrash    = FileHelper.createTempDir();
+            props.setProperty("test.heap.max", "390");
             props.setProperty("coherence.distributed.localstorage", "true");
             props.setProperty("coherence.distributed.persistence.active.dir", m_fileActive.getAbsolutePath());
             props.setProperty("coherence.distributed.persistence.snapshot.dir", m_fileSnapshot.getAbsolutePath());
