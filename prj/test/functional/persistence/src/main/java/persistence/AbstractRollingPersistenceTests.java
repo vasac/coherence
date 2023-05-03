@@ -125,7 +125,7 @@ public abstract class AbstractRollingPersistenceTests
         File fileTrash    = FileHelper.createTempDir();
 
         // IT ACTUALLY WORKS --DOESN'T WORK--
-        System.setProperty("test.heap.max", "256");
+        System.setProperty("test.heap.max", "259");
 
         System.setProperty("test.persistence.active.dir", fileActive.getAbsolutePath());
         System.setProperty("test.persistence.snapshot.dir", fileSnapshot.getAbsolutePath());
@@ -139,7 +139,7 @@ public abstract class AbstractRollingPersistenceTests
         for (int i = 0; i < cServers; i++)
             {
             memberHandler.addServer(null,
-                                    HeapSize.of(128, HeapSize.Units.MB, 385, HeapSize.Units.MB, true),
+                                    HeapSize.of(128, HeapSize.Units.MB, 254, HeapSize.Units.MB, true),
                                     JvmOptions.include("-XX:+ExitOnOutOfMemoryError")
             );
             }
