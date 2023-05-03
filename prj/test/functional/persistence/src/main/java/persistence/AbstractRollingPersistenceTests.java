@@ -124,7 +124,7 @@ public abstract class AbstractRollingPersistenceTests
         File fileSnapshot = FileHelper.createTempDir();
         File fileTrash    = FileHelper.createTempDir();
 
-        // DOESN'T WORK
+        // IT ACTUALLY WORKS --DOESN'T WORK--
         System.setProperty("test.heap.max", "317");
 
         System.setProperty("test.persistence.active.dir", fileActive.getAbsolutePath());
@@ -249,6 +249,8 @@ public abstract class AbstractRollingPersistenceTests
         Properties props = new Properties();
         props.setProperty("test.recover.quorum", "0"); // dynamic recovery
         props.setProperty("coherence.override", "common-tangosol-coherence-override.xml");
+
+        System.setProperty("test.heap.max", "320");
 
         try
             {
