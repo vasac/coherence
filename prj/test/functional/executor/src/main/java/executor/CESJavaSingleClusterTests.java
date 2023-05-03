@@ -59,7 +59,7 @@ public class CESJavaSingleClusterTests
     @BeforeClass
     public static void setupClass()
         {
-        System.setProperty("test.heap.max", "513");
+        System.setProperty("test.heap.max", "523");
         // ensure the proxy service is running (before we connect)
         AbstractClusteredExecutorServiceTests.ensureConcurrentServiceRunning(s_coherence.getCluster());
         ensureExecutorProxyAvailable(s_coherence.getCluster());
