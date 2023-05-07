@@ -160,6 +160,7 @@ public class ReadWriteBackingMapTests
         // split into multiple jobs with different result.
         System.setProperty("tangosol.coherence.distributed.threads.min", "1");
         System.setProperty("tangosol.coherence.distributed.threads.max", "1");
+        System.setProperty("test.heap.max", "263");
 
         AbstractFunctionalTest._startup();
         }

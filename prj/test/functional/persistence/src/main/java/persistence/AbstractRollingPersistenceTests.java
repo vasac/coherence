@@ -139,7 +139,7 @@ public abstract class AbstractRollingPersistenceTests
         for (int i = 0; i < cServers; i++)
             {
             memberHandler.addServer(null,
-                                    HeapSize.of(128, HeapSize.Units.MB, 254, HeapSize.Units.MB, true),
+                                    HeapSize.of(128, HeapSize.Units.MB, 264, HeapSize.Units.MB, true),
                                     JvmOptions.include("-XX:+ExitOnOutOfMemoryError")
             );
             }
