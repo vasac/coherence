@@ -125,7 +125,8 @@ public abstract class AbstractRollingPersistenceTests
         File fileTrash    = FileHelper.createTempDir();
 
         // IT ACTUALLY WORKS --DOESN'T WORK--
-        System.setProperty("test.heap.max", "259");
+        System.setProperty("test.heap.min", "129");
+        System.setProperty("test.heap.max", "193");
 
         System.setProperty("test.persistence.active.dir", fileActive.getAbsolutePath());
         System.setProperty("test.persistence.snapshot.dir", fileSnapshot.getAbsolutePath());
