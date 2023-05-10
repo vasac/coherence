@@ -52,4 +52,24 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <argLine>${failsafe.argLine} ${failsafe.coverage.argline} ${failsafe.modules.argline}</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <configuration>
+          <argLine>${surefire.argLine} ${surefire.coverage.argline} ${surefire.modules.argline}</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+
+  </build>
 </project>

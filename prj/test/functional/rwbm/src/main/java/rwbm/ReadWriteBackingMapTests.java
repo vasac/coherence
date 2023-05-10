@@ -161,7 +161,7 @@ public class ReadWriteBackingMapTests
         System.setProperty("tangosol.coherence.distributed.threads.min", "1");
         System.setProperty("tangosol.coherence.distributed.threads.max", "1");
         System.setProperty("test.heap.min", "127");
-        System.setProperty("test.heap.max", "448");
+        System.setProperty("test.heap.max", "768");
 
         AbstractFunctionalTest._startup();
         }
