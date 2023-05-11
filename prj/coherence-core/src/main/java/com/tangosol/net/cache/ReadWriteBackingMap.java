@@ -75,6 +75,8 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import java.time.Instant;
+
 /**
 * Backing Map implementation that provides a size-limited cache of a
 * persistent store and supports configurable write-behind and refresh-
@@ -1765,6 +1767,9 @@ public class ReadWriteBackingMap
         Map           mapInternal = getInternalCache();
         Set           setRemoves  = getPendingRemoves();
 
+        final String format = "XXX Entry %1$s,%2$s,%3$s,%4$s,%5$s \n";
+        long startTime = System.currentTimeMillis();
+        System.err.printf(format, Instant.now(), 0, instantiateEntry(oKey, oValue, null).getKey(), Thread.currentThread().getName(), "[3] RWBM.putInternal started; mapControl.lock");
         mapControl.lock(oKey, -1L);
         try
             {
@@ -1873,6 +1878,7 @@ public class ReadWriteBackingMap
         finally
             {
             mapControl.unlock(oKey);
+            System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, instantiateEntry(oKey, oValue, null).getKey(), Thread.currentThread().getName(), "[3] RWBM.putInternal completed; mapControl.unlock");
             }
         }
 
@@ -7593,6 +7599,7 @@ public class ReadWriteBackingMap
                     }
                 }
 
+            final String format = "XXX Entry %1$s,%2$s,%3$s,%4$s,%5$s \n";
             /**
             * {@inheritDoc}
             */
@@ -7601,6 +7608,8 @@ public class ReadWriteBackingMap
                 Entry         entry      = (Entry) binEntry;
                 ConcurrentMap mapControl = getControlMap();
                 Object        binKey     = binEntry.getBinaryKey();
+                long startTime = System.currentTimeMillis();
+                System.err.printf(format, Instant.now(), 0, entry.getKey(), Thread.currentThread().getName(), "[N3] onNext started [RWBM NonBlockingEntryStoreWrapper.StoreOperationObserver.onNext]");
 
                 f_counterProcessed.incrementAndGet();
 
@@ -7616,6 +7625,7 @@ public class ReadWriteBackingMap
                         entry.stopTracking();
 
                         mapControl.unlock(binKey);
+                        System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, entry.getKey(), Thread.currentThread().getName(), "[N3] onNext completed [RWBM NonBlockingEntryStoreWrapper.StoreOperationObserver.onNext]");
                         }
                     }
                 }
@@ -7679,6 +7689,8 @@ public class ReadWriteBackingMap
                     {
                     Entry  entry  = (Entry) iter.next();
                     Object binKey = entry.getBinaryKey();
+                    long startTime = System.currentTimeMillis();
+                    System.err.printf(format, Instant.now(), 0, entry.getKey(), Thread.currentThread().getName(), "[C2] onComplete started [RWBM NonBlockingEntryStoreWrapper.StoreOperationObserver.onComplete]");
                     if (getContext().isKeyOwned(binKey) && mapControl.lock(binKey, 100L))
                         {
                         try
@@ -7692,6 +7704,7 @@ public class ReadWriteBackingMap
                             mapControl.unlock(binKey);
                             }
                         }
+                    System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, entry.getKey(), Thread.currentThread().getName(), "[C2] onComplete completed [RWBM NonBlockingEntryStoreWrapper.StoreOperationObserver.onComplete]");
                     }
                 }
 

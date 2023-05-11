@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import java.time.Instant;
 
 public class TestNonBlockingStore<K, V>
         extends AbstractTestStore
@@ -327,7 +328,7 @@ public class TestNonBlockingStore<K, V>
         logMethodInvocation("storeAll");
 
         boolean fRemove    = true;
-
+        final String format = "XXX Entry %1$s,%2$s,%3$s,%4$s,%5$s \n";
         try
             {
             for (Iterator iter = setBinEntries.iterator(); iter.hasNext(); )
@@ -364,11 +365,20 @@ public class TestNonBlockingStore<K, V>
                            {
                            checkForFailure(getFailureKeyStoreAll(), oKey);
 
+                           long startTime = System.currentTimeMillis();
+                           System.err.printf(format, Instant.now(), 0, oKey, Thread.currentThread().getName(), "[S1] put started [TestNonBlockingStore.storeAll]");
                            getStorageMap().put(oKey, oValue);
+                           System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, oKey, Thread.currentThread().getName(), "[S1] put done [TestNonBlockingStore.storeAll]");
+                           startTime = System.currentTimeMillis();
+                           System.err.printf(format, Instant.now(), 0, oKey, Thread.currentThread().getName(), "[S2] storeAll.executor.submit/onNext start synchronized [TestNonBlockingStore.storeAll]");
                            synchronized (iter)
                                {
+                               long startTime2 = System.currentTimeMillis();
+                               System.err.printf(format, Instant.now(), 0, oKey, Thread.currentThread().getName(), "[S3] storeAll.executor.submit/onNext inner synchronized BEGIN [TestNonBlockingStore.storeAll]");
                                observer.onNext(binEntry);
+                               System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime2, oKey, Thread.currentThread().getName(), "[S3] storeAll.executor.submit/onNext inner synchronized END [TestNonBlockingStore.storeAll]");
                                }
+                           System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, oKey, Thread.currentThread().getName(), "[S2] storeAll.executor.submit/onNext done synchronized [TestNonBlockingStore.storeAll]");
                            }
                         catch (Exception e)
                            {

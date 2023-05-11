@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import java.time.Instant;
 
 /**
 * An abstract BinaryEntry-based bundler that serves as a base for
@@ -38,16 +39,22 @@ public abstract class AbstractBinaryEntryBundler
         {
         AtomicInteger counter  = m_countThreads;
         int           cThreads = counter.incrementAndGet();
+        final String format = "XXX Entry %1$s,%2$s,%3$s,%4$s,%5$s \n";
         try
             {
             if (cThreads < getThreadThreshold())
                 {
+                long startTime = System.currentTimeMillis();
+                System.err.printf(format, Instant.now(), 0, binEntry.getKey(), Thread.currentThread().getName(), "[P1] bundle started [AbstractBinaryEntryBundle.process <]" );
                 bundle(Collections.singleton(binEntry));
+                System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, binEntry.getKey(), Thread.currentThread().getName(), "[P1] bundle started [AbstractBinaryEntryBundle.process <]" );
                 return;
                 }
 
             Bundle  bundle;
             boolean fBurst;
+            long startTime = System.currentTimeMillis();
+            System.err.printf(format, Instant.now(), 0, binEntry.getKey(), Thread.currentThread().getName(), "[P2] sync bundle started [AbstractBinaryEntryBundle.process]" );
             while (true)
                 {
                 bundle = (Bundle) getOpenBundle();
@@ -55,14 +62,21 @@ public abstract class AbstractBinaryEntryBundler
                     {
                     if (bundle.isOpen())
                         {
+                        long startTime2 = System.currentTimeMillis();
+                        System.err.printf(format, Instant.now(), 0, binEntry.getKey(), Thread.currentThread().getName(), "[P3] sync bundle inner started [AbstractBinaryEntryBundle.process]" );
                         boolean fFirst = bundle.add(binEntry);
 
                         fBurst = bundle.waitForResults(fFirst);
+                        System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime2, binEntry.getKey(), Thread.currentThread().getName(), "[P3] sync bundle inner completed [AbstractBinaryEntryBundle.process]" );
                         break;
                         }
                     }
                 }
+            System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, binEntry.getKey(), Thread.currentThread().getName(), "[P2] sync bundle completed [AbstractBinaryEntryBundle.process]" );
+            startTime = System.currentTimeMillis();
+            System.err.printf(format, Instant.now(), 0, binEntry.getKey(), Thread.currentThread().getName(), "[P4] start bundle.process(fBurst... started [AbstractBinaryEntryBundle.process]" );
             bundle.process(fBurst, binEntry);
+            System.err.printf(format, Instant.now(), System.currentTimeMillis() - startTime, binEntry.getKey(), Thread.currentThread().getName(), "[P4] bundle.process(fBurst... completed [AbstractBinaryEntryBundle.process]" );
             }
         finally
             {
