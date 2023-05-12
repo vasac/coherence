@@ -31,8 +31,10 @@
 
   <properties>
     <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
+<!--
     <surefire.argLine>-Xmx522m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} -XX:+ExitOnOutOfMemoryError -Dfile.encoding=UTF-8</surefire.argLine>
     <failsafe.argLine>-Xmx523m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${project.build.directory} -XX:+ExitOnOutOfMemoryError -Dfile.encoding=UTF-8</failsafe.argLine>
+-->
   </properties>
 
   <dependencies>
@@ -52,6 +54,7 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+<!--
   <build>
     <plugins>
       <plugin>
@@ -72,4 +75,5 @@
     </plugins>
 
   </build>
+-->
 </project>
