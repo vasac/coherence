@@ -9,6 +9,7 @@ package persistence;
 import com.oracle.bedrock.testsupport.deferred.Eventually;
 
 import com.oracle.coherence.persistence.PersistenceManager;
+import com.oracle.coherence.testing.junit.ThreadDumpOnTimeoutRule;
 
 import com.tangosol.io.FileHelper;
 import com.tangosol.io.ReadBuffer;
@@ -20,12 +21,14 @@ import com.tangosol.net.NamedCache;
 
 import com.tangosol.persistence.bdb.BerkeleyDBManager;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import javax.management.MBeanException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static com.oracle.bedrock.deferred.DeferredHelper.invoking;
 import static org.hamcrest.Matchers.is;
@@ -40,6 +43,9 @@ import static org.junit.Assert.assertEquals;
 public class BerkeleyDBSimplePersistenceTests
         extends AbstractSimplePersistenceTests
     {
+
+    @ClassRule
+    public static final ThreadDumpOnTimeoutRule timeout = ThreadDumpOnTimeoutRule.after(90, TimeUnit.MINUTES);
 
     // ----- AbstractSimplePersistenceTests methods -------------------------
 
