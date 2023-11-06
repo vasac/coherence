@@ -6,10 +6,13 @@
  */
 package extend;
 
+import com.oracle.coherence.testing.junit.ThreadDumpOnTimeoutRule;
+
 import com.tangosol.net.NamedCache;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 
@@ -74,4 +77,10 @@ public class ViewExtendDirectTests
         cache.clear();
         return cache;
         }
+    
+    // ----- data members ---------------------------------------------------
+
+    @ClassRule
+    public static final ThreadDumpOnTimeoutRule timeout = ThreadDumpOnTimeoutRule.after(60, TimeUnit.MINUTES);
+
     }
