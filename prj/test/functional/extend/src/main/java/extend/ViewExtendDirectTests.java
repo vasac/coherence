@@ -10,6 +10,8 @@ import com.oracle.coherence.testing.junit.ThreadDumpOnTimeoutRule;
 
 import com.tangosol.net.NamedCache;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
