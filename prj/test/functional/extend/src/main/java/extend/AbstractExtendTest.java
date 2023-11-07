@@ -13,6 +13,7 @@ import com.oracle.bedrock.testsupport.deferred.Eventually;
 import com.tangosol.net.CacheService;
 import com.tangosol.net.NamedCache;
 
+import com.tangosol.util.Base;
 import com.tangosol.util.ClassHelper;
 
 import com.oracle.coherence.testing.AbstractTestInfrastructure;
@@ -76,7 +77,17 @@ public abstract class AbstractExtendTest
 
     protected NamedCache getNamedCache(String sCacheName, ClassLoader loader)
         {
-        NamedCache cache = getFactory().ensureCache(sCacheName, loader);
+        NamedCache cache;
+        try
+            {
+            cache = getFactory().ensureCache(sCacheName, loader);
+            }
+        catch (Exception e)
+            {
+            System.err.println("AAAAAAAAAAAAAAAAAAAA netstat");
+            AbstractTestInfrastructure.displayPortInfo();
+            throw Base.ensureRuntimeException(e);
+            }
 
         // release any previous state
         if (cache.getCacheService().getInfo().getServiceType().equals(
