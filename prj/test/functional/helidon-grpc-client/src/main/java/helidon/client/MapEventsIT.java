@@ -35,6 +35,8 @@ import com.tangosol.net.NamedCache;
 
 import com.tangosol.net.Session;
 import com.tangosol.net.grpc.GrpcDependencies;
+
+import com.tangosol.util.Base;
 import com.tangosol.util.MapEvent;
 
 import io.helidon.microprofile.server.Server;
@@ -43,6 +45,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.oracle.coherence.testing.AbstractTestInfrastructure;
 import com.oracle.coherence.testing.util.EventsHelper;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -58,7 +61,9 @@ import java.util.Collections;
 import java.util.List;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -92,10 +97,19 @@ public class MapEventsIT
         // The CDI server will start DCS which will in turn cause the gRPC server to start
         s_server = Server.create().start();
 
-        // wait at most 1 minute for the gRPC Server
-        GrpcServerController.INSTANCE.whenStarted()
-                .toCompletableFuture()
-                .get(1, TimeUnit.MINUTES);
+        try
+            {
+            // wait at most 1 minute for the gRPC Server
+            GrpcServerController.INSTANCE.whenStarted()
+                    .toCompletableFuture()
+                    .get(1, TimeUnit.MINUTES);
+            }
+        catch (Exception e)
+            {
+            System.err.println("AAAAAAAAAAAAAAAAAAAA netstat");
+            AbstractTestInfrastructure.displayPortInfo();
+            throw Base.ensureRuntimeException(e);
+            }
         }
 
     @AfterAll

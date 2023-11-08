@@ -11,6 +11,8 @@ import com.oracle.coherence.cdi.SessionName;
 import com.oracle.coherence.client.NamedCacheClient;
 
 import com.oracle.coherence.grpc.proxy.GrpcServerController;
+import com.oracle.coherence.testing.AbstractTestInfrastructure;
+
 import com.tangosol.coherence.component.util.SafeNamedCache;
 import com.tangosol.internal.net.SessionNamedCache;
 import com.tangosol.net.NamedCache;
@@ -27,7 +29,11 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 
+import com.tangosol.util.Base;
+
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -55,10 +61,19 @@ public class CacheProducerIT
         // The CDI server will start DCS which will in turn cause the gRPC server to start
         s_server = Server.create().start();
 
-        // wait at most 1 minute for the gRPC Server
-        GrpcServerController.INSTANCE.whenStarted()
-                .toCompletableFuture()
-                .get(1, TimeUnit.MINUTES);
+        try
+            {
+            // wait at most 1 minute for the gRPC Server
+            GrpcServerController.INSTANCE.whenStarted()
+                    .toCompletableFuture()
+                    .get(1, TimeUnit.MINUTES);
+            }
+        catch (Exception e)
+            {
+            System.err.println("AAAAAAAAAAAAAAAAAAAA netstat");
+            AbstractTestInfrastructure.displayPortInfo();
+            throw Base.ensureRuntimeException(e);
+            }
         }
 
     @AfterAll
